@@ -1,0 +1,17 @@
+#ifndef MAP_H
+#define MAP_H
+#include "brick.h"
+#include <QVector>
+class Map
+{
+public:
+    Map(int w, int h);
+    int getW();
+    int getH();
+    QVector<Brick *> map;
+private:
+    int m_w;
+    int m_h;
+};
+
+#endif // MAP_H
