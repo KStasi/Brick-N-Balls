@@ -11,6 +11,7 @@ public:
     Brick(double x, double y, int w, int h, int power, int r, int g, int b);
     Brick(double x, double y, int w, int h, int power);
     void draw(QPainter *painter);
+    void changeMainColor(int r, int g, int b);
     void decreasePower();
     int m_power;
 private:

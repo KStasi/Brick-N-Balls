@@ -36,8 +36,8 @@ private:
     void renderNow();
     void renderScene();
     void updateScene();
+    void setSize();
     bool isAnimating() const;
-    QPointF  *m_mouse = nullptr;
     bool m_mouse_pressed = 0;
 private slots:
     void pushBalls();

@@ -17,23 +17,33 @@ void BallsPool::create(int *count, int size, double x, double y, double x_speed,
 }
 void BallsPool::update(Map *m_map, double time_left)
 {
-    for(Ball *ball : pool)
+    QMutableVectorIterator<Ball *> iter_pool(pool);
+    Ball *ball;
+
+    while (iter_pool.hasNext())
     {
+        ball = iter_pool.next();
         ball->update(time_left);
-        ball->checkBorder(new QRectF(0, 50, W_SIZE, H_SIZE - 100));
+        if (!ball->checkBorder(new QRectF(0, HEADER, W_SIZE - BLOCK_SIZE / 4, H_SIZE - HEADER)))
+        {
+            iter_pool.remove();
+            continue ;
+        }
         for(Brick *brick : m_map->map)
             if (ball->m_area->intersects(*brick->m_area))
             {
                 ball->checkMove(brick);
                 brick->decreasePower();
+                brick->changeMainColor(162, 171, 179);
             }
+
         for(Ball *other_ball : pool)
             if (other_ball != ball && ball->m_area->intersects(*other_ball->m_area))
                 ball->checkMove(other_ball);
     }
 
-    QMutableVectorIterator<Brick *> iter(m_map->map);
-    while (iter.hasNext())
-        if (iter.next()->m_power < 1)
-            iter.remove();
+    QMutableVectorIterator<Brick *> iter_map(m_map->map);
+    while (iter_map.hasNext())
+        if (iter_map.next()->m_power < 1)
+            iter_map.remove();
 }

@@ -6,7 +6,7 @@ class WinState : public State
 {
 public:
     WinState();
-    void changeBehaviour();
+    void changeBehaviour(ResultBar &result_bar);
     void drawScene(QPainter *painter, Map *map, BallsPool *pool, Platform *platform);
 };
 

@@ -8,7 +8,7 @@ Ball::Ball(double x, double y, int w, int h, double speed_x, double speed_y, int
 }
 
 Ball::Ball(double x, double y, int w, int h, double speed_x, double speed_y):
-    GameObject(x, y, w, h, 100, 45, 34)
+    GameObject(x, y, w, h, 237, 154, 78)
 {
     m_speed_x = speed_x;
     m_speed_y = speed_y;
@@ -34,7 +34,7 @@ void Ball::rotate(int x_rot, int y_rot)
 
 void Ball::checkMove(GameObject *object)
 {
-    if (object->m_area->contains(*m_area) ||  m_area->intersects(*object->m_area))
+    if (m_area->intersects(*object->m_area))
     {
         if (object->m_area->contains(m_area->topLeft())
         && object->m_area->contains(m_area->bottomLeft()))
@@ -63,7 +63,8 @@ void Ball::checkMove(GameObject *object)
         m_area->moveTo(m_x, m_y);
     }
 }
-void Ball::checkBorder(QRectF *area)
+
+bool Ball::checkBorder(QRectF *area)
 {
         if (area->left() > m_area->left())
         {
@@ -74,6 +75,7 @@ void Ball::checkBorder(QRectF *area)
         {
             m_y = area->bottom() - m_h;
             rotate(1, -1);
+            return false;
         }
         else if (area->right() < m_area->right() - m_w)
         {
@@ -86,4 +88,5 @@ void Ball::checkBorder(QRectF *area)
             rotate(1, -1);
         }
         m_area->moveTo(m_x, m_y);
+        return true;
 }

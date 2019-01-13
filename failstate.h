@@ -6,7 +6,7 @@ class FailState : public State
 {
 public:
     FailState();
-    void changeBehaviour();
+    void changeBehaviour(ResultBar &result_bar);
     void drawScene(QPainter *painter, Map *map, BallsPool *pool, Platform *platform);
 };
 

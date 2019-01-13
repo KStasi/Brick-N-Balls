@@ -6,7 +6,7 @@ class PlayState : public State
 {
 public:
     PlayState();
-    void changeBehaviour();
+    void changeBehaviour(ResultBar &result_bar);
     void drawScene(QPainter *painter, Map *map, BallsPool *pool, Platform *platform);
 };
 

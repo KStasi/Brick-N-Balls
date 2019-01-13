@@ -5,14 +5,19 @@ Form::Form(QWindow *parent) :
     QWindow(parent),
     m_backingStore(new QBackingStore(this))
 {
+    setSize();
+    game = Game::start(this);
+    m_updateTimer.start();
+}
+
+void Form::setSize()
+{
     setGeometry(0, HEADER, W_SIZE, H_SIZE);
     setMaximumWidth(W_SIZE);
     setMaximumHeight(H_SIZE);
     setMinimumWidth(W_SIZE);
     setMinimumHeight(H_SIZE);
     m_backingStore->resize(size());
-    game = Game::start(this);
-    m_updateTimer.start();
 }
 
 bool Form::event(QEvent *event)
@@ -33,7 +38,7 @@ void Form::exposeEvent(QExposeEvent *event)
 
 void Form::mouseMoveEvent(QMouseEvent *event)
 {
-    m_mouse = new QPointF(event->localPos());
+    game->m_result_bar.m_cursor = new QPointF(event->localPos());
 
     if (game->n_balls < 1)
         m_mouse_pressed = 0;
@@ -49,12 +54,10 @@ void Form::mousePressEvent(QMouseEvent *event)
 
 void Form::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (game->n_balls && !m_ballsTimer.isActive())
+    if (game->n_balls && !game->m_result_bar.getStart())
     {
-
-        m_ballsTimer.start();
-        m_ballsTimer.setInterval(300);
-        connect(&m_ballsTimer, SIGNAL(timeout()), this, SLOT(pushBalls()));
+        game->m_result_bar.m_platform = new QPointF(event->localPos());
+        QTimer::singleShot(300, this, SLOT(pushBalls()));
     }
 }
 
@@ -63,17 +66,16 @@ void Form::pushBalls()
     double x_speed;
     double y_speed;
 
-    if (game->n_balls < 1)
-    {
-        game->n_balls = 0;
-        game->m_platform->update(game->m_platform->getX(), game->n_balls);
-    }
-    x_speed = abs(m_mouse->x() - game->m_platform->getX() - W_SIZE / 20) * ((m_mouse->x() > W_SIZE / 2) ? 1 : -1);
-    y_speed = abs(m_mouse->y() - H_SIZE + 40) * ((m_mouse->y() > H_SIZE / 2) ? -1 : 1);
+    game->updatePlatform();
+
+    x_speed = abs(game->m_result_bar.m_platform->x() - game->m_platform->getX() - W_SIZE / 20)
+    * ((abs(game->m_result_bar.m_platform->x()) > game->m_platform->getX() + W_SIZE / 20) ? 1 : -1);
+    y_speed = abs(game->m_result_bar.m_platform->y() - H_SIZE + 40) * -1;
     game->m_balls_pool->create(&game->n_balls, BLOCK_SIZE / 2,
-    game->m_platform->getX() + W_SIZE / 20, H_SIZE - 40, x_speed, y_speed);
-    if (!game->n_balls)
-        m_ballsTimer.stop();
+    game->m_platform->getX() + W_SIZE / 20 - BLOCK_SIZE / 4, H_SIZE - 40, x_speed, y_speed);
+
+    if (game->n_balls > 0)
+        QTimer::singleShot(300, this, SLOT(pushBalls()));
 }
 
 void Form::renderNow()
@@ -105,17 +107,11 @@ void Form::updateScene()
 
 void Form::renderScene()
 {
-    QPaintDevice *device;
-
     m_backingStore->beginPaint(QRect(0, 0, width(), height()));
-    device = m_backingStore->paintDevice();
 
-    QPainter painter(device);
-    painter.fillRect(0, 0, width(), height(), Qt::white);
-    painter.setRenderHint(QPainter::Antialiasing);
-    game->m_state->drawScene(&painter, game->m_map, game->m_balls_pool, game->m_platform);
+    QPainter painter(m_backingStore->paintDevice());
+    painter.fillRect(0, 0, width(), height(), QColor("#181C28"));
     game->draw(&painter);
-    painter.end();
 
     m_backingStore->endPaint();
     m_backingStore->flush(QRect(0, 0, width(), height()));
