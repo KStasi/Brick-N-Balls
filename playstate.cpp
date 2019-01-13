@@ -1,9 +1,21 @@
 #include "playstate.h"
 
 PlayState::PlayState(): State ()
-{}
+{
+    m_reset_area = QRect(0,0,0,0);
+    m_menu_area = QRect(0,0,0,0);
+}
 
-void PlayState::changeBehaviour(ResultBar &result_bar) {}
+void PlayState::changeBehaviour(ResultBar &result_bar)
+{
+    result_bar.setGameMode(0);
+}
+
+bool PlayState::processClick(ResultBar &result_bar)
+{
+    result_bar.changeResult(0);
+    return true;
+}
 
 void PlayState::drawScene(QPainter *painter, Map *map, BallsPool *pool, Platform *platform)
 {

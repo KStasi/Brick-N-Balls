@@ -30,11 +30,11 @@ void BallsPool::update(Map *m_map, double time_left)
             continue ;
         }
         for(Brick *brick : m_map->map)
-            if (ball->m_area->intersects(*brick->m_area))
+            if (ball->m_area->intersects(*brick->m_area)
+            || ball->m_area->contains(*brick->m_area))
             {
                 ball->checkMove(brick);
                 brick->decreasePower();
-                brick->changeMainColor(162, 171, 179);
             }
 
         for(Ball *other_ball : pool)

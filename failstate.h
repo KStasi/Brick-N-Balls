@@ -8,6 +8,7 @@ public:
     FailState();
     void changeBehaviour(ResultBar &result_bar);
     void drawScene(QPainter *painter, Map *map, BallsPool *pool, Platform *platform);
+    bool processClick(ResultBar &result_bar);
 };
 
 #endif // FAILSTATE_H

@@ -21,6 +21,8 @@ public:
     void newLevel();
     bool getStart();
     void switchStart();
+    bool getGameMode();
+    void setGameMode(bool launch);
     QPointF  *m_cursor = nullptr;
     QPointF  *m_platform = nullptr;
 private:
@@ -29,7 +31,8 @@ private:
     int m_score = 0;
     int m_try = TRIES_BY_DEFAULT;
     int m_result = 0;
-    bool m_start = 0;
+    bool m_start = 1;
+    bool m_game_mode = 0;
     enum scores_changes
     {
         block = 10,

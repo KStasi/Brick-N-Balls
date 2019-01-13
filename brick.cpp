@@ -30,4 +30,5 @@ void Brick::draw(QPainter *painter)
 void Brick::decreasePower()
 {
     m_power--;
+    changeMainColor(162, 171, 179);
 }

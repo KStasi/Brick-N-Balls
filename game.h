@@ -17,7 +17,7 @@ class Game: QObject, public Drawable
 {
     Q_OBJECT
 public:
-    static Game* start(QWindow *window);
+    static Game* start();
     void launchGame();
     void updatePlatform();
     State           *m_state;
@@ -25,11 +25,12 @@ public:
     BallsPool       *m_balls_pool;
     Platform        *m_platform;
     ResultBar       m_result_bar;
+    QRectF          m_menu_area = QRectF(9 * W_SIZE / 10 * 0.95, H_SIZE - W_SIZE / 7, W_SIZE / 10, W_SIZE / 10);
     int             n_balls = BALLS_BY_DEFAULT;
     void            draw(QPainter *painter);
+    void            endGame();
 private:
-    Game(QWindow *window);
-    QWindow         *m_window;
+    Game();
     QTimer          *tmr;
     int             m_w = BLOCKS_BY_DEFAULT;
     int             m_h = BLOCKS_BY_DEFAULT;

@@ -34,34 +34,35 @@ void Ball::rotate(int x_rot, int y_rot)
 
 void Ball::checkMove(GameObject *object)
 {
-    if (m_area->intersects(*object->m_area))
+    if ((object->m_area->contains(m_area->topLeft())
+        || object->m_area->contains(m_area->bottomLeft()))
+        && (object->m_area->right() - m_area->left() < object->m_area->width() / 2))
     {
-        if (object->m_area->contains(m_area->topLeft())
-        && object->m_area->contains(m_area->bottomLeft()))
-        {
-            m_x = object->m_area->right();
-            rotate(-1, 1);
-        }
-        else if (object->m_area->contains(m_area->bottomRight())
-        && object->m_area->contains(m_area->bottomLeft()))
-        {
-            m_y = object->m_area->top() - m_h;
-            rotate(1, -1);
-        }
-        else if (object->m_area->contains(m_area->topRight())
-        && object->m_area->contains(m_area->bottomRight()))
-        {
-            m_x = object->m_area->left() - m_w;
-            rotate(-1, 1);
-        }
-        else if (object->m_area->contains(m_area->topLeft())
-        && object->m_area->contains(m_area->topRight()))
-        {
-            m_y = object->m_area->bottom();
-            rotate(1, -1);
-        }
-        m_area->moveTo(m_x, m_y);
+        m_x = object->m_area->right();
+        rotate(-1, 1);
     }
+    if ((object->m_area->contains(m_area->bottomLeft())
+        || object->m_area->contains(m_area->bottomRight()))
+        && object->m_area->bottom() - m_area->top()< object->m_area->height() / 2)
+    {
+        m_y = object->m_area->top() - m_h;
+        rotate(1, -1);
+    }
+    if ((object->m_area->contains(m_area->topRight())
+        || object->m_area->contains(m_area->bottomRight()))
+        && m_area->right() - object->m_area->left() < BLOCK_SIZE / 2)
+    {
+        m_x = object->m_area->left() - m_w;
+        rotate(-1, 1);
+    }
+    if ((object->m_area->contains(m_area->topLeft())
+        || object->m_area->contains(m_area->topRight()))
+        && m_area->bottom() - object->m_area->top() < object->m_area->height() / 2)
+    {
+        m_y = object->m_area->bottom();
+        rotate(1, -1);
+    }
+    m_area->moveTo(m_x, m_y);
 }
 
 bool Ball::checkBorder(QRectF *area)

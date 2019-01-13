@@ -12,6 +12,11 @@ bool ResultBar::getStart()
     return m_start;
 }
 
+bool ResultBar::getGameMode()
+{
+    return m_game_mode;
+}
+
 int ResultBar::getLevel()
 {
     return m_level;
@@ -77,9 +82,8 @@ void ResultBar::reset()
 
 void ResultBar::newLevel()
 {
-    m_power = POWER_BY_DEFAULT + (m_level - 1) * 10;
+    m_power = abs(POWER_BY_DEFAULT + m_level * 3);
     m_level += 1;
-    changeScore(2);
     m_try = TRIES_BY_DEFAULT - (m_level / 5) * 5;
     m_try = (m_try > 0) ? m_try : 2;
     m_result = 0;
@@ -88,4 +92,9 @@ void ResultBar::newLevel()
 void ResultBar::switchStart()
 {
     m_start = (m_start == 0);
+}
+
+void ResultBar::setGameMode(bool launch)
+{
+    m_game_mode = launch;
 }

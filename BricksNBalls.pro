@@ -41,7 +41,8 @@ SOURCES += \
     ballspool.cpp \
     platform.cpp \
     resultbar.cpp \
-    strategy.cpp
+    strategy.cpp \
+    menustate.cpp
 
 HEADERS += \
         form.h \
@@ -59,7 +60,8 @@ HEADERS += \
     ballspool.h \
     platform.h \
     resultbar.h \
-    strategy.h
+    strategy.h \
+    menustate.h
 
 FORMS += \
         form.ui

@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QMouseEvent>
 #include "game.h"
+#include "menustate.h"
 
 namespace Ui {
 class Form;
@@ -32,6 +33,7 @@ private:
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void drawMenu();
     void renderLater();
     void renderNow();
     void renderScene();
@@ -39,6 +41,8 @@ private:
     void setSize();
     bool isAnimating() const;
     bool m_mouse_pressed = 0;
+    bool m_game_loaded = false;
+    MenuState menu = MenuState(&m_game_loaded, &m_game_loaded, &game);
 private slots:
     void pushBalls();
 };

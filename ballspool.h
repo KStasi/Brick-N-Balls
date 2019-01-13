@@ -5,7 +5,7 @@
 #include "drawable.h"
 #include <QVector>
 #include <QMutableVectorIterator>
-#define BALLS_BY_DEFAULT 30
+#define BALLS_BY_DEFAULT 20
 
 class BallsPool
 {

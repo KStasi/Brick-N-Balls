@@ -1,13 +1,11 @@
 #include "game.h"
 
-Game::Game(QWindow *window) : QObject()
-{
-    m_window = window;
-}
+Game::Game() : QObject()
+{}
 
-Game* Game::start(QWindow *window)
+Game* Game::start()
 {
-    static Game *game = new Game(window);
+    static Game *game = new Game();
     game->launchGame();
     return game;
 }
@@ -23,9 +21,11 @@ void Game::launchGame()
 
 void Game::levelStart()
 {
-    m_map = MapBuilder(m_w, m_h, m_result_bar.getPower()).generateMap();
     m_state = new PlayState();
+    m_map = MapBuilder(m_w, m_h, m_result_bar.getPower()).generateMap();
     newTry();
+    m_result_bar.setGameMode(1);
+    m_result_bar.switchStart();
 }
 
 void Game::newTry()
@@ -54,18 +54,32 @@ void Game::draw(QPainter *painter)
     painter->setRenderHint(QPainter::Antialiasing);
     m_state->drawScene(painter, m_map, m_balls_pool, m_platform);
 
-    painter->setPen(QColor(240, 240, 255));
-    painter->setFont(QFont("Helvetica", 20));
-    painter->drawText(QRectF(10, 10, W_SIZE, HEADER), "Level: " +
-    QString::number(m_result_bar.getLevel()) + "\t\tScore: " +
-    QString::number(m_result_bar.getScore()) + "\t\tTries left: " +
-    QString::number(m_result_bar.getTry()) + "\t\tBalls: " + QString::number(n_balls));
 
+    painter->setPen(QColor(240, 240, 255));
+    if (m_result_bar.getGameMode())
+    {
+        painter->setFont(QFont("Helvetica", 25));
+        painter->drawText(QRectF(10, 10, W_SIZE, HEADER), "Level: " +
+        QString::number(m_result_bar.getLevel()) + "\t\tScore: " +
+        QString::number(m_result_bar.getScore()) + "\t\tTries: " +
+        QString::number(m_result_bar.getTry()) + "\t\tBalls: " +
+        QString::number(n_balls));
+        painter->drawEllipse(m_menu_area);
+    }
+    else
+    {
+        painter->setFont(QFont("Helvetica", 45));
+        painter->drawText(QRectF(W_SIZE / 3.5, HEADER, W_SIZE / 2, HEADER * 6), "Level: " +
+        QString::number(m_result_bar.getLevel()) + "\nScore: " +
+        QString::number(m_result_bar.getScore()));
+    }
     painter->end();
 }
 
 void Game::changeStrategy()
 {
+    if (m_result_bar.getResult() == 2)
+        return ;
     if (!m_result_bar.getTry())
         m_result_bar.changeResult(-1);
     else if (!m_balls_pool->pool.isEmpty() && m_map->map.isEmpty())
@@ -103,6 +117,7 @@ void Game::changeState()
     case 2:
         delete m_state;
         levelStart();
+        m_result_bar.changeResult(0);
         break;
     }
     if(m_result_bar.getResult())
@@ -113,9 +128,26 @@ void Game::updateReult()
 {
     if (!m_result_bar.getStart() && !m_result_bar.getResult()
     && m_result_bar.getTry())
-        return ;
-    changeStrategy();
-    if (m_result_bar.getTry())
-        executeStrategy();
+        ;
+    else
+    {
+        changeStrategy();
+        changeState();
+        if (m_result_bar.getGameMode() && m_result_bar.getStart())
+            executeStrategy();
+    }
     changeState();
+}
+
+void Game::endGame()
+{
+    delete m_state;
+    delete m_map;
+    delete m_balls_pool;
+    m_state = new FailState();
+    m_state->changeBehaviour(m_result_bar);
+    m_result_bar.reset();
+    m_result_bar.changeResult(2);
+    tmr->stop();
+    delete tmr;
 }

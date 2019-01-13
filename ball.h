@@ -2,7 +2,7 @@
 #define BALL_H
 #include "drawable.h"
 #include "gameobject.h"
-#define SPEED_DEFAULT 300
+#define SPEED_DEFAULT 330
 
 class Ball : public Drawable, public GameObject
 {
