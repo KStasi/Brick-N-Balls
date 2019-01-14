@@ -12,7 +12,7 @@ Platform *Platform::create(double x, double y, int w, int h)
     return platform;
 }
 
-void Platform::draw(QPainter *painter)
+void Platform::draw(QPainter &painter)
 {
     mainColor = QColor(248, 233, 161);
     drawRect(painter, m_x, m_y, m_w, m_h, mainColor);

@@ -41,7 +41,6 @@ SOURCES += \
     ballspool.cpp \
     platform.cpp \
     resultbar.cpp \
-    strategy.cpp \
     menustate.cpp
 
 HEADERS += \
@@ -60,11 +59,12 @@ HEADERS += \
     ballspool.h \
     platform.h \
     resultbar.h \
-    strategy.h \
     menustate.h
 
 FORMS += \
         form.ui
+
+QT += multimedia
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

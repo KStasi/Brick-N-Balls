@@ -27,7 +27,7 @@ public:
     ResultBar       m_result_bar;
     QRectF          m_menu_area = QRectF(9 * W_SIZE / 10 * 0.95, H_SIZE - W_SIZE / 7, W_SIZE / 10, W_SIZE / 10);
     int             n_balls = BALLS_BY_DEFAULT;
-    void            draw(QPainter *painter);
+    void            draw(QPainter &painter);
     void            endGame();
 private:
     Game();

@@ -19,8 +19,11 @@ void WinState::changeBehaviour(ResultBar &result_bar)
         result_bar.switchStart();
 }
 
-void WinState::drawScene(QPainter *painter, Map *map, BallsPool *pool, Platform *platform)
+void WinState::drawScene(QPainter &painter, Map *map, BallsPool *pool, Platform *platform)
 {
     drawResultWindow(painter, QColor("#092a3a"), QColor("#395036"));
-    painter->drawText(QRect(9.5 * W_SIZE / 24, 23 * H_SIZE / 37, W_SIZE / 3, H_SIZE / 18), "Continue");
+    painter.drawText(QRect(9.5 * W_SIZE / 24, 23 * H_SIZE / 37, W_SIZE / 3, H_SIZE / 18), "Continue");
+    painter.drawText(QRect(7 * W_SIZE / 16, 28 * H_SIZE / 40, W_SIZE / 4, H_SIZE / 20), "Menu");
+    painter.setFont(QFont("Helvetica", 70));
+    painter.drawText(QRect(W_SIZE / 8, H_SIZE / 3, 3 * W_SIZE / 4, H_SIZE / 4), "YOU WIN!");
 }

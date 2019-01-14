@@ -16,13 +16,13 @@ void Brick::changeMainColor(int r, int g, int b)
     mainColor = QColor(r + m_power * 3 , g + m_power * 3, b + m_power * 3);
 }
 
-void Brick::draw(QPainter *painter)
+void Brick::draw(QPainter &painter)
 {
     drawRect(painter, m_x, m_y, m_w, m_h, mainColor);
 
-    painter->setPen(QColor(192 - m_power * 3, 185 - m_power * 3, 170 - m_power * 3));
-    painter->setFont(QFont("Helvetica", 14));
-    painter->drawText(*m_area, " " + QString::number(m_power) + " ");
+    painter.setPen(QColor(192 - m_power * 3, 185 - m_power * 3, 170 - m_power * 3));
+    painter.setFont(QFont("Helvetica", 14));
+    painter.drawText(*m_area, " " + QString::number(m_power) + " ");
 
     changeMainColor(58, 70, 85);
 }

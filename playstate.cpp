@@ -17,7 +17,7 @@ bool PlayState::processClick(ResultBar &result_bar)
     return true;
 }
 
-void PlayState::drawScene(QPainter *painter, Map *map, BallsPool *pool, Platform *platform)
+void PlayState::drawScene(QPainter &painter, Map *map, BallsPool *pool, Platform *platform)
 {
     platform->draw(painter);
     for(Drawable *brick : map->map)
@@ -25,6 +25,6 @@ void PlayState::drawScene(QPainter *painter, Map *map, BallsPool *pool, Platform
     if (pool)
         for(Drawable *ball : pool->pool)
             ball->draw(painter);
-    painter->setBrush(QColor(75, 85, 121));
-    painter->drawRect(QRect(0, 0, W_SIZE, HEADER));
+    painter.setBrush(QColor(75, 85, 121));
+    painter.drawRect(QRect(0, 0, W_SIZE, HEADER));
 }

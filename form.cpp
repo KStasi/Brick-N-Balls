@@ -6,6 +6,7 @@ Form::Form(QWindow *parent) :
     m_backingStore(new QBackingStore(this))
 {
     setSize();
+    setAudio();
     m_updateTimer.start();
 }
 
@@ -17,6 +18,14 @@ void Form::setSize()
     setMinimumWidth(W_SIZE);
     setMinimumHeight(H_SIZE);
     m_backingStore->resize(size());
+}
+
+void Form::setAudio()
+{
+    playlist.addMedia(QUrl::fromLocalFile("/home/kstasi/Documents/C++/BricksNBalls/background.wav"));
+    playlist.setPlaybackMode(QMediaPlaylist::Loop);
+    player.setPlaylist(&playlist);
+    player.play();
 }
 
 bool Form::event(QEvent *event)
@@ -88,6 +97,17 @@ void Form::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
+void Form::keyPressEvent(QKeyEvent *event)
+{
+    if (!m_game_loaded && event->key() == Qt::Key_Space)
+    {
+        m_game_loaded = 1;
+        game = Game::start();
+    }
+    if (!m_game_loaded && event->key() == Qt::Key_Escape)
+        close();
+}
+
 void Form::pushBalls()
 {
     double x_speed;
@@ -99,7 +119,7 @@ void Form::pushBalls()
     x_speed = abs(game->m_result_bar.m_platform->x() - game->m_platform->getX() - W_SIZE / 20)
     * ((abs(game->m_result_bar.m_platform->x()) > game->m_platform->getX() + W_SIZE / 20) ? 1 : -1);
     y_speed = abs(game->m_result_bar.m_platform->y() - H_SIZE + 40) * -1;
-    game->m_balls_pool->create(&game->n_balls, BLOCK_SIZE / 2,
+    game->m_balls_pool->create(game->n_balls, BLOCK_SIZE / 2,
     game->m_platform->getX() + W_SIZE / 20 - BLOCK_SIZE / 4, H_SIZE - 40, x_speed, y_speed);
 
     if (game->n_balls > 0 && game->m_result_bar.getStart())
@@ -141,9 +161,9 @@ void Form::renderScene()
     painter.fillRect(0, 0, width(), height(), QColor("#181C28"));
 
     if (m_game_loaded)
-        game->draw(&painter);
+        game->draw(painter);
     else
-        menu.drawScene(&painter, nullptr, nullptr, nullptr);
+        menu.drawScene(painter, nullptr, nullptr, nullptr);
     m_backingStore->endPaint();
     m_backingStore->flush(QRect(0, 0, width(), height()));
 }
@@ -162,5 +182,6 @@ void Form::setAnimating(bool isAnimating)
 
 Form::~Form()
 {
-
+    player.stop();
+    delete game;
 }

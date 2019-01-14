@@ -49,38 +49,40 @@ void Game::updatePlatform()
         n_balls = 0;
 }
 
-void Game::draw(QPainter *painter)
+void Game::draw(QPainter &painter)
 {
-    painter->setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::Antialiasing);
     m_state->drawScene(painter, m_map, m_balls_pool, m_platform);
 
 
-    painter->setPen(QColor(240, 240, 255));
+    painter.setPen(QColor(240, 240, 255));
     if (m_result_bar.getGameMode())
     {
-        painter->setFont(QFont("Helvetica", 25));
-        painter->drawText(QRectF(10, 10, W_SIZE, HEADER), "Level: " +
+        painter.setFont(QFont("Helvetica", 25));
+        painter.drawText(QRectF(10, 10, W_SIZE, HEADER), "Level: " +
         QString::number(m_result_bar.getLevel()) + "\t\tScore: " +
         QString::number(m_result_bar.getScore()) + "\t\tTries: " +
         QString::number(m_result_bar.getTry()) + "\t\tBalls: " +
         QString::number(n_balls));
-        painter->drawEllipse(m_menu_area);
+        painter.drawEllipse(m_menu_area);
+        painter.setFont(QFont("Helvetica", 59));
+        painter.drawText(QRectF(9.1 * W_SIZE / 10 * 0.95, H_SIZE - W_SIZE / 6, W_SIZE / 10, 1.1 * W_SIZE / 10), "≡");
     }
     else
     {
-        painter->setFont(QFont("Helvetica", 45));
-        painter->drawText(QRectF(W_SIZE / 3.5, HEADER, W_SIZE / 2, HEADER * 6), "Level: " +
+        painter.setFont(QFont("Helvetica", 45));
+        painter.drawText(QRectF(W_SIZE / 3.5, HEADER, W_SIZE / 2, HEADER * 6), "Level: " +
         QString::number(m_result_bar.getLevel()) + "\nScore: " +
         QString::number(m_result_bar.getScore()));
     }
-    painter->end();
+    painter.end();
 }
 
 void Game::changeStrategy()
 {
     if (m_result_bar.getResult() == 2)
         return ;
-    if (!m_result_bar.getTry())
+    if (!m_result_bar.getTry() || m_result_bar.getScore() < -200)
         m_result_bar.changeResult(-1);
     else if (!m_balls_pool->pool.isEmpty() && m_map->map.isEmpty())
         m_result_bar.changeResult(1);
