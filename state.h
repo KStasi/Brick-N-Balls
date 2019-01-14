@@ -11,9 +11,9 @@ class State
 {
 public:
     State();
-    virtual void changeBehaviour(ResultBar &result_bar)=0;
-    virtual void drawScene(QPainter &painter, Map *map, BallsPool *pool, Platform *platform)=0;
-    virtual bool processClick(ResultBar &result_bar)=0;
+    virtual void changeBehaviour(ResultBar &result_bar);
+    virtual void drawScene(QPainter &painter, Map &map, BallsPool &pool, Platform &platform);
+    virtual bool processClick(ResultBar &result_bar);
     virtual void drawResultWindow(QPainter &painter, QColor mainColor, QColor secondColor);
     virtual bool menuChecked(QPoint mouse);
     virtual ~State();

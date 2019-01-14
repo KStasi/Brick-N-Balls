@@ -22,7 +22,8 @@ void Form::setSize()
 
 void Form::setAudio()
 {
-    playlist.addMedia(QUrl::fromLocalFile("/home/kstasi/Documents/C++/BricksNBalls/background.wav"));
+    playlist.addMedia(QUrl::fromLocalFile(
+        "/home/kstasi/Documents/C++/BricksNBalls/background.wav"));
     playlist.setPlaybackMode(QMediaPlaylist::Loop);
     player.setPlaylist(&playlist);
     player.play();
@@ -42,39 +43,40 @@ void Form::exposeEvent(QExposeEvent *event)
 {
     if (isExposed())
         renderNow();
+    Q_UNUSED(event);
 }
 
 void Form::mouseMoveEvent(QMouseEvent *event)
 {
     if (!m_game_loaded || !game->m_result_bar.getGameMode())
         return ;
-    game->m_result_bar.m_cursor = new QPointF(event->localPos());
+    game->m_result_bar.m_cursor = QPointF(event->localPos());
 
-    if (game->n_balls < 1)
+    if (game->m_result_bar.getBalls() < 1)
         m_mouse_pressed = 0;
 
     if (!m_mouse_pressed)
-        game->m_platform->update(event->x(), game->n_balls);
+        game->m_platform->update(event->x(), game->m_result_bar.getBalls());
 }
 
 void Form::mousePressEvent(QMouseEvent *event)
 {
     if (!m_game_loaded)
     {
-        menu.processClick(new QPointF(event->localPos()));
+        menu.processClick(QPointF(event->localPos()));
         if (menu.menuChecked(event->localPos().toPoint()))
             close();
         return ;
     }
 
     if (m_game_loaded && (game->m_menu_area.contains(event->localPos())
-         || game->m_state->menuChecked(event->localPos().toPoint())))
+        || game->m_state->menuChecked(event->localPos().toPoint())))
         menu.stopGame();
 
     if (!m_game_loaded)
         return ;
 
-    game->m_result_bar.m_cursor = new QPointF(event->localPos());
+    game->m_result_bar.m_cursor = QPointF(event->localPos());
 
     if (game->m_state->processClick(game->m_result_bar))
         m_mouse_pressed = 1;
@@ -89,10 +91,15 @@ void Form::mouseReleaseEvent(QMouseEvent *event)
         m_mouse_pressed = 0;
         return ;
     }
-    game->m_result_bar.m_cursor = new QPointF(event->localPos());
-    if (game->n_balls && !game->m_result_bar.getStart() && m_mouse_pressed)
+
+    game->m_result_bar.m_cursor = QPointF(event->localPos());
+
+    if (game->m_result_bar.m_bonusController.getStreams() > 0
+        && !game->m_result_bar.getStart() && m_mouse_pressed)
     {
-        game->m_result_bar.m_platform = new QPointF(event->localPos());
+
+        game->m_result_bar.m_bonusController.useStream();
+        game->m_result_bar.m_platform = QPointF(event->localPos());
         QTimer::singleShot(300, this, SLOT(pushBalls()));
     }
 }
@@ -116,13 +123,16 @@ void Form::pushBalls()
     if (!game->m_result_bar.getGameMode())
         return ;
     game->updatePlatform();
-    x_speed = abs(game->m_result_bar.m_platform->x() - game->m_platform->getX() - W_SIZE / 20)
-    * ((abs(game->m_result_bar.m_platform->x()) > game->m_platform->getX() + W_SIZE / 20) ? 1 : -1);
-    y_speed = abs(game->m_result_bar.m_platform->y() - H_SIZE + 40) * -1;
-    game->m_balls_pool->create(game->n_balls, BLOCK_SIZE / 2,
-    game->m_platform->getX() + W_SIZE / 20 - BLOCK_SIZE / 4, H_SIZE - 40, x_speed, y_speed);
 
-    if (game->n_balls > 0 && game->m_result_bar.getStart())
+    x_speed = abs(game->m_result_bar.m_platform.x() - game->m_platform->getX() - W_SIZE / 20)
+        * ((abs(game->m_result_bar.m_platform.x()) > game->m_platform->getX() + W_SIZE / 20) ? 1 : -1);
+    y_speed = abs(game->m_result_bar.m_platform.y() - H_SIZE + 40) * -1;
+
+    game->m_balls_pool->create(*game->m_result_bar.getBallsLink(),
+        static_cast<int>(BLOCK_SIZE / 2 * game->m_result_bar.m_bonusController.getSizeIndex()),
+        game->m_platform->getX() + W_SIZE / 20 - BLOCK_SIZE / 4, H_SIZE - 40, x_speed, y_speed);
+
+    if (game->m_result_bar.getBalls() > 0 && game->m_result_bar.getStart())
         QTimer::singleShot(300, this, SLOT(pushBalls()));
 }
 
@@ -145,11 +155,12 @@ void Form::updateScene()
 {
     double time_left;
 
-    time_left = static_cast<double>(m_updateTimer.elapsed()) / 1000.f;
+    time_left = static_cast<double>(m_updateTimer.elapsed()) / 1000;
     if (time_left > 0 && m_game_loaded)
     {
         m_updateTimer.restart();
-        game->m_balls_pool->update(game->m_map, time_left);
+        game->m_balls_pool->update(game->m_map, time_left,
+        game->m_result_bar.m_bonusController);
     }
 }
 
@@ -163,7 +174,7 @@ void Form::renderScene()
     if (m_game_loaded)
         game->draw(painter);
     else
-        menu.drawScene(painter, nullptr, nullptr, nullptr);
+        menu.drawScene(painter);
     m_backingStore->endPaint();
     m_backingStore->flush(QRect(0, 0, width(), height()));
 }
@@ -183,5 +194,7 @@ void Form::setAnimating(bool isAnimating)
 Form::~Form()
 {
     player.stop();
-    delete game;
+    if (game)
+        delete game;
+    delete m_backingStore;
 }

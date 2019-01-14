@@ -5,11 +5,15 @@ Brick::Brick(double x, double y, int w, int h, int power, int r, int g, int b):
 {
     m_power = power;
 }
+
 Brick::Brick(double x, double y, int w, int h, int power):
     GameObject(x, y, w, h, 58 + power * 3, 70 + power * 3, 85 + power * 3)
 {
     m_power = power;
 }
+
+Brick::~Brick()
+{}
 
 void Brick::changeMainColor(int r, int g, int b)
 {

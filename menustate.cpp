@@ -6,12 +6,9 @@ MenuState::MenuState(bool *game_loaded, Game **game)
     m_game = game;
 }
 
-bool MenuState::processClick(ResultBar &result_bar) {}
-void MenuState::changeBehaviour(ResultBar &result_bar) {}
-
-bool MenuState::processClick(QPointF *m_cursor)
+bool MenuState::processClick(QPointF m_cursor)
 {
-    if (m_reset_area.contains(m_cursor->toPoint()))
+    if (m_reset_area.contains(m_cursor.toPoint()))
     {
         *m_game = Game::start();
         return (*m_game_loaded = true);
@@ -38,7 +35,7 @@ void MenuState::drawLogo(QPainter &painter)
     painter.drawEllipse(3 * BLOCK_SIZE, H_SIZE / 3, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE);
 }
 
-void MenuState::drawScene(QPainter &painter, Map *map, BallsPool *pool, Platform *platform)
+void MenuState::drawScene(QPainter &painter)
 {
     drawResultWindow(painter, QColor("#181C28"), QColor(75, 85, 121));
     painter.drawText(QRect(11 * W_SIZE / 25, 23 * H_SIZE / 37, W_SIZE / 3, H_SIZE / 18), "Start");

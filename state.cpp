@@ -2,6 +2,16 @@
 
 State::State(){}
 
+bool State::processClick(ResultBar &result_bar) {Q_UNUSED(result_bar) return false;}
+void State::changeBehaviour(ResultBar &result_bar) {Q_UNUSED(result_bar)}
+void State::drawScene(QPainter &painter, Map &map, BallsPool &pool, Platform &platform)
+{
+    Q_UNUSED(painter);
+    Q_UNUSED(map);
+    Q_UNUSED(pool);
+    Q_UNUSED(platform);
+}
+
 void State::drawResultWindow(QPainter &painter, QColor mainColor, QColor secondColor)
 {
     painter.setBrush(mainColor);

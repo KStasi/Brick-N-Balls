@@ -27,7 +27,7 @@ public:
 private:
     QElapsedTimer m_updateTimer;
     QTimer m_ballsTimer;
-    Game *game;
+    Game *game = nullptr;
     bool m_isAnimating = false;
     QBackingStore *m_backingStore = nullptr;
     QMediaPlayer player;

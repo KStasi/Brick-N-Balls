@@ -10,6 +10,11 @@ GameObject::GameObject(double x, double y, int w, int h, int r, int g, int b):
     mainColor.setRgb(r, g, b);
 }
 
+GameObject::~GameObject()
+{
+    delete m_area;
+}
+
 double GameObject::getX()
 {
     return m_x;

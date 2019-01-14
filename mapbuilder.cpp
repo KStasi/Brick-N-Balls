@@ -32,13 +32,14 @@ Map *MapBuilder::generateMap()
 {
     Map *map;
 
-    srand(time(nullptr));
+    srand(static_cast<unsigned int>(time(nullptr)));
     map = new Map(m_w, m_h);
     map->map.reserve(m_w * m_h);
     for (int i = 0; i < m_w * m_h * static_cast<double>(0.01 + static_cast<double>(rand() % 91) / 100); i++)
-        map->map.append(new Brick(static_cast<int>(m_w * static_cast<double>(rand() % 100) / 100)  * BLOCK_SIZE,
-        static_cast<int>(m_h * static_cast<double>(rand() % 100) / 100 + 2) * BLOCK_SIZE,
-        BLOCK_SIZE, BLOCK_SIZE, static_cast<int>(m_max_power * static_cast<double>(rand() % 91 + 10) / 100)));
+        map->map.append(new Brick(static_cast<int>(m_w * static_cast<double>(rand() % 100) / 100)
+            * BLOCK_SIZE, static_cast<int>(m_h * static_cast<double>(rand() % 100) / 100 + 2)
+            * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, static_cast<int>(m_max_power *
+            static_cast<double>(rand() % 91 + 10) / 100)));
     return map;
 }
 

@@ -2,7 +2,7 @@
 #define MAP_H
 #include "brick.h"
 #include <QVector>
-#include <memory>
+
 class Map
 {
 public:

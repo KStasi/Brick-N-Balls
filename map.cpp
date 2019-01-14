@@ -8,4 +8,7 @@ Map::Map(int w, int h)
 
 Map::~Map()
 {
+    for(Brick *brick : map)
+        delete brick;
+    map.clear();
 }

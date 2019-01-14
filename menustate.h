@@ -8,10 +8,8 @@ class MenuState : public State
 public:
     MenuState(bool *game_loaded, Game **game);
     void drawLogo(QPainter &painter);
-    void drawScene(QPainter &painter, Map *map, BallsPool *pool, Platform *platform);
-    bool processClick(ResultBar &result_bar);
-    void changeBehaviour(ResultBar &result_bar);
-    bool processClick(QPointF *m_cursor);
+    void drawScene(QPainter &painter);
+    bool processClick(QPointF m_cursor);
     void stopGame();
 private:
     bool *m_game_loaded;

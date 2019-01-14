@@ -1,7 +1,20 @@
 #include "game.h"
 
-Game::Game() : QObject()
-{}
+Game::Game() : QObject() {}
+
+Game::~Game()
+{
+    if(tmr)
+        delete tmr;
+    if (m_state)
+        delete m_state;
+    if (m_map)
+        delete m_map;
+    if (m_balls_pool)
+        delete m_balls_pool;
+    if (m_platform)
+        delete m_platform;
+}
 
 Game* Game::start()
 {
@@ -22,6 +35,8 @@ void Game::launchGame()
 void Game::levelStart()
 {
     m_state = new PlayState();
+    if (m_map)
+        delete m_map;
     m_map = MapBuilder(m_w, m_h, m_result_bar.getPower()).generateMap();
     newTry();
     m_result_bar.setGameMode(1);
@@ -32,27 +47,29 @@ void Game::newTry()
 {
     if (m_result_bar.getTry() < 1)
         return ;
+    if (m_balls_pool)
+        delete m_balls_pool;
     m_balls_pool = new BallsPool();
     m_blocks = m_map->map.size();
     m_try = m_result_bar.getTry();
-    n_balls = BALLS_BY_DEFAULT;
+    m_result_bar.resetBalls();
+    m_result_bar.m_bonusController.resetStream();
 }
 
 void Game::updatePlatform()
 {
-    if (n_balls == BALLS_BY_DEFAULT)
+    if (m_result_bar.getBalls() == BALLS_BY_DEFAULT)
     {
         m_result_bar.switchStart();
         m_platform->update(m_platform->getX(), 0);
     }
-    if (n_balls < 1)
-        n_balls = 0;
+    m_result_bar.updateBalls();
 }
 
 void Game::draw(QPainter &painter)
 {
     painter.setRenderHint(QPainter::Antialiasing);
-    m_state->drawScene(painter, m_map, m_balls_pool, m_platform);
+    m_state->drawScene(painter, *m_map, *m_balls_pool, *m_platform);
 
 
     painter.setPen(QColor(240, 240, 255));
@@ -60,20 +77,21 @@ void Game::draw(QPainter &painter)
     {
         painter.setFont(QFont("Helvetica", 25));
         painter.drawText(QRectF(10, 10, W_SIZE, HEADER), "Level: " +
-        QString::number(m_result_bar.getLevel()) + "\t\tScore: " +
-        QString::number(m_result_bar.getScore()) + "\t\tTries: " +
-        QString::number(m_result_bar.getTry()) + "\t\tBalls: " +
-        QString::number(n_balls));
+            QString::number(m_result_bar.getLevel()) + "\t\tScore: " +
+            QString::number(m_result_bar.getScore()) + "\t\tTries: " +
+            QString::number(m_result_bar.getTry()) + "\t\tBalls: " +
+            QString::number(m_result_bar.getBalls()));
         painter.drawEllipse(m_menu_area);
         painter.setFont(QFont("Helvetica", 59));
-        painter.drawText(QRectF(9.1 * W_SIZE / 10 * 0.95, H_SIZE - W_SIZE / 6, W_SIZE / 10, 1.1 * W_SIZE / 10), "≡");
+        painter.drawText(QRectF(9.1 * W_SIZE / 10 * 0.95, H_SIZE - W_SIZE / 6,
+            W_SIZE / 10, 1.1 * W_SIZE / 10), "≡");
     }
     else
     {
         painter.setFont(QFont("Helvetica", 45));
         painter.drawText(QRectF(W_SIZE / 3.5, HEADER, W_SIZE / 2, HEADER * 6), "Level: " +
-        QString::number(m_result_bar.getLevel()) + "\nScore: " +
-        QString::number(m_result_bar.getScore()));
+            QString::number(m_result_bar.getLevel()) + "\nScore: " +
+            QString::number(m_result_bar.getScore()));
     }
     painter.end();
 }
@@ -95,6 +113,7 @@ void Game::executeStrategy()
         m_blocks--;
         m_result_bar.changeScore(1);
     }
+
     if (!m_balls_pool->pool.size())
     {
         m_result_bar.decrementTry();
@@ -129,7 +148,7 @@ void Game::changeState()
 void Game::updateReult()
 {
     if (!m_result_bar.getStart() && !m_result_bar.getResult()
-    && m_result_bar.getTry())
+        && m_result_bar.getTry())
         ;
     else
     {
@@ -152,4 +171,7 @@ void Game::endGame()
     m_result_bar.changeResult(2);
     tmr->stop();
     delete tmr;
+    m_map = nullptr;
+    m_balls_pool = nullptr;
+    tmr = nullptr;
 }
